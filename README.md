@@ -228,6 +228,3 @@ sudo systemctl enable --now xgalactic
 
 
 Made for the Galactic Empire (and your Foundation guild) 🌌
-
-
-
