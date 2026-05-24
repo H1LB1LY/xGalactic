@@ -3,6 +3,7 @@ xGalactic — Grok-Powered Galactic Standard Translator for Discord
 
 The X-like translation experience for international Discord servers.
 """
+__version__ = "0.1.0"
 
 from __future__ import annotations
 
@@ -67,7 +68,7 @@ class XGalacticBot(commands.Bot):
         logger.info("Slash commands synced")
 
     async def on_ready(self) -> None:
-        logger.info("Logged in as %s (%s)", self.user, self.user.id if self.user else "?")
+        logger.info("Logged in as %s (%s) — xGalactic v%s", self.user, self.user.id, __version__)
         activity = discord.Activity(
             type=discord.ActivityType.watching,
             name="🌍 flag reactions · /groktranslate",

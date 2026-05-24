@@ -225,6 +225,45 @@ sudo systemctl enable --now xgalactic
 \* Can be set per-guild via `/config api-key` instead.
 
 ---
+## 🚀 Development Roadmap
 
+xGalactic is being developed in **sprints**. Each sprint adds a major capability, is fully tested, and only then do we move to the next one.
+
+### Completed (Sprint 0)
+- On-demand translation (flag reactions, right-click "Translate with Grok", `/groktranslate`)
+- Grok-4.3 integration (best-in-class natural translation)
+- Language onboarding with persistent buttons
+- Language roles + smart channel visibility
+- Admin configuration (`/config`, `/stats`, budget caps)
+- Rate limiting, security, logging
+
+### Upcoming Sprints (in priority order)
+
+**Sprint 1: Language Management**  
+Auto-create and map roles for dozens of languages (`/setup-top-languages`, `/list-languages`, `/add-language`)
+
+**Sprint 2: Version Update Checker**  
+Automatic GitHub release notifications to admins when a new version is available.
+
+**Sprint 3: Feature Toggles & Safe Mode Switching**  
+`/config mode on-demand` / `mirroring`, individual feature on/off, safe enable/disable without data loss.
+
+**Sprint 4: Full Channel Mirroring**  
+The "invisible localization" experience — separate language channels that feel native to each user.
+
+**Sprint 5: Production Polish**  
+Better logging, heartbeat alerts, final documentation.
+
+We will test each sprint thoroughly before moving forward. The bot will always remain **free and open source** (MIT license).
+
+---
+
+## Philosophy
+
+- Completely free to use and self-host
+- No paywalls, no premium tiers
+- You control your own Grok API costs
+- Open source forever — feel free to fork and improve
+- Please do not sell or monetize the bot itself
 
 Made for the Galactic Empire (and your Foundation guild) 🌌
