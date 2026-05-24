@@ -245,7 +245,66 @@ class OnboardingCog(commands.Cog):
             ),
             ephemeral=True,
         )
+    @app_commands.command(
+        name="list-languages",
+        description="Show available languages you can add",
+    )
+    @app_commands.describe(count="How many languages to show (default 30)")
+    @app_commands.default_permissions(manage_roles=True)
+    async def list_languages(
+        self, interaction: discord.Interaction, count: int = 30
+    ) -> None:
+        if not interaction.guild:
+            return
+        max_available = len(ONBOARDING_LANGUAGES)
+        count = min(count, max_available)
+        lines = [f"{emoji} {label} (`{key}`)" for label, emoji, key in ONBOARDING_LANGUAGES[:count]]
+        await interaction.response.send_message(
+            embed=success_embed(f"**Available Languages** ({count}/{max_available})\n" + "\n".join(lines)),
+            ephemeral=True,
+        )
 
+    @app_commands.command(
+        name="setup-top-languages",
+        description="Automatically create and map the top N languages (default 20)",
+    )
+    @app_commands.describe(count="Number of languages to create (default 20)")
+    @app_commands.default_permissions(manage_roles=True)
+    async def setup_top_languages(
+        self, interaction: discord.Interaction, count: int = 20
+    ) -> None:
+        if not interaction.guild:
+            return
+
+        max_available = len(ONBOARDING_LANGUAGES)
+        count = max(1, min(count, max_available))
+
+        created = []
+        for label, emoji, key in ONBOARDING_LANGUAGES[:count]:
+            role = discord.utils.get(interaction.guild.roles, name=label)
+            if not role:
+                role = await interaction.guild.create_role(
+                    name=label,
+                    mentionable=True,
+                    reason="xGalactic top languages setup",
+                )
+                # Position bot role above it
+                me = interaction.guild.me
+                if me and me.top_role > role:
+                    try:
+                        await role.edit(position=me.top_role.position - 1)
+                    except discord.HTTPException:
+                        pass
+
+            await self.db.set_language_role(interaction.guild.id, key, role.id)
+            created.append(f"{emoji} {label} (`{key}`)")
+
+        await interaction.response.send_message(
+            embed=success_embed(
+                f"✅ Created and mapped **{len(created)}** languages:\n" + "\n".join(created)
+            ),
+            ephemeral=True,
+        )
 
 async def setup(bot: commands.Bot) -> None:
     bot.add_view(LanguageSelectView(bot))

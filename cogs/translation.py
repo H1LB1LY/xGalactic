@@ -141,7 +141,7 @@ class TranslationCog(commands.Cog):
             await interaction_or_message.followup.send(embed=embed)
         elif isinstance(interaction_or_message, discord.Message):
             await interaction_or_message.reply(embed=embed, mention_author=False)
-
+    
     @app_commands.command(
         name="groktranslate",
         description="Translate text with Grok (X-like natural translation)",
@@ -157,11 +157,11 @@ class TranslationCog(commands.Cog):
         language: str | None = None,
     ) -> None:
         if not interaction.guild:  # Prevent crash in DMs
-        await interaction.response.send_message(
-            embed=error_embed("This command only works inside servers."), 
-            ephemeral=True
-        )
-        return
+            await interaction.response.send_message(
+                embed=error_embed("This command only works inside servers."), 
+                ephemeral=True
+            )
+            return
         
         target = resolve_language_name(language) if language else user_preferred_language(
             interaction.user  # type: ignore[arg-type]
@@ -266,54 +266,57 @@ class TranslationCog(commands.Cog):
         # Full onboarding handles role assignment separately.
 
 
-class TranslateContextMenu(commands.Cog):
+# class TranslateContextMenu(commands.Cog):
+#    """Right-click 'Translate with Grok' context menu."""
+#
+#    def __init__(self, bot: commands.Bot) -> None:
+#        self.bot = bot
+#        self.db: Database = bot.db  # type: ignore[attr-defined]
+#        self.grok: GrokClient = bot.grok  # type: ignore[attr-defined]
+#        self.guild_limiter: RateLimiter = bot.guild_limiter  # type: ignore[attr-defined]
+#        self.user_limiter: RateLimiter = bot.user_limiter  # type: ignore[attr-defined]
+
+@app_commands.context_menu(name="Translate with Grok")
+async def translate_message(interaction: discord.Interaction, message: discord.Message) -> None:
     """Right-click 'Translate with Grok' context menu."""
-
-    def __init__(self, bot: commands.Bot) -> None:
-        self.bot = bot
-        self.db: Database = bot.db  # type: ignore[attr-defined]
-        self.grok: GrokClient = bot.grok  # type: ignore[attr-defined]
-        self.guild_limiter: RateLimiter = bot.guild_limiter  # type: ignore[attr-defined]
-        self.user_limiter: RateLimiter = bot.user_limiter  # type: ignore[attr-defined]
-
-    @commands.message_context_menu(name="Translate with Grok")
-    async def translate_message(
-        self, interaction: discord.Interaction, message: discord.Message
-    ) -> None:
-        cog = self.bot.get_cog("TranslationCog")
-        if not isinstance(cog, TranslationCog):
-            await interaction.response.send_message(
-                embed=error_embed("Translation module not loaded."),
-                ephemeral=True,
-            )
-            return
-
-        text = message.content
-        if not text and message.embeds:
-            text = message.embeds[0].description or ""
-
-        if not text.strip():
-            await interaction.response.send_message(
-                embed=error_embed("No text to translate on this message."),
-                ephemeral=True,
-            )
-            return
-
-        member = interaction.user
-        if isinstance(member, discord.Member):
-            target = user_preferred_language(member)
-        else:
-            target = "English"
-
-        await cog._do_translate(
-            interaction,
-            text,
-            target,
-            reply_to=message,
-            defer_ephemeral=True,
+    cog = interaction.client.get_cog("TranslationCog")
+    if not isinstance(cog, TranslationCog):
+        await interaction.response.send_message(
+            embed=error_embed("Translation module not loaded."),
+            ephemeral=True,
         )
+        return
+
+    text = message.content
+    if not text and message.embeds:
+        text = message.embeds[0].description or ""
+
+    if not text.strip():
+        await interaction.response.send_message(
+            embed=error_embed("No text to translate on this message."),
+            ephemeral=True,
+        )
+        return
+
+    member = interaction.user
+    if isinstance(member, discord.Member):
+        target = user_preferred_language(member)
+    else:
+        target = "English"
+
+    await cog._do_translate(
+        interaction,
+        text,
+        target,
+        reply_to=message,
+        defer_ephemeral=True,
+    )
 
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(TranslationCog(bot))
-    await bot.add_cog(TranslateContextMenu(bot))
+    bot.tree.add_command(translate_message)
+    logger.info("Translation context menu added")
+    logger.info("Translation command added")
+    logger.info("Translation cog loaded")
+    logger.info("Translation setup complete")
