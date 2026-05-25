@@ -245,13 +245,19 @@ class Database:
                 row = await cur.fetchone()
                 return (row[0], row[1]) if row else None
 
-    async def set_language_role(self, guild_id: int, language_key: str, role_id: int) -> None:
+    async def set_language_role(self, guild_id: int, language_key: str, role_id: int | None) -> None:
         async with self._db() as db:
-            await db.execute(
-                """INSERT OR REPLACE INTO language_roles (guild_id, language_key, role_id)
-                   VALUES (?, ?, ?)""",
-                (guild_id, language_key, role_id),
-            )
+            if role_id is None:
+                await db.execute(
+                    """DELETE FROM language_roles WHERE guild_id = ? AND language_key = ?""",
+                    (guild_id, language_key),
+                )
+            else:
+                await db.execute(
+                    """INSERT OR REPLACE INTO language_roles (guild_id, language_key, role_id)
+                       VALUES (?, ?, ?)""",
+                    (guild_id, language_key, role_id),
+                )
             await db.commit()
 
     async def get_language_roles(self, guild_id: int) -> dict[str, int]:

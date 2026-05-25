@@ -237,10 +237,19 @@ xGalactic is being developed in **sprints**. Each sprint adds a major capability
 - Admin configuration (`/config`, `/stats`, budget caps)
 - Rate limiting, security, logging
 
-### Upcoming Sprints (in priority order)
+**Sprint 1** – Language Management  
+- Large internal language database (70+ languages)  
+- `/list-languages` – preview available languages  
+- `/setup-top-languages [count]` – auto-create top N languages (default 20)  
+- `/add-language <name>` – fuzzy search to add a single language  
+- `/remove-language <name>` – safely remove a language role  
+- `/list-installed-languages` – show currently installed roles  
+- `/cleanup-languages` – full cleanup with confirmation  
+- Improved welcome panel (buttons + dropdown)  
+- Automatic English role creation on `/setup-welcome`
 
-**Sprint 1: Language Management**  
-Auto-create and map roles for dozens of languages (`/setup-top-languages`, `/list-languages`, `/add-language`)
+
+### Upcoming Sprints (in priority order)
 
 **Sprint 2: Version Update Checker**  
 Automatic GitHub release notifications to admins when a new version is available.

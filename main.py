@@ -3,7 +3,6 @@ xGalactic — Grok-Powered Galactic Standard Translator for Discord
 
 The X-like translation experience for international Discord servers.
 """
-__version__ = "0.1.0"
 
 from __future__ import annotations
 
@@ -19,6 +18,8 @@ from dotenv import load_dotenv
 from utils.db import Database
 from utils.grok import GrokClient
 from utils.rate_limit import default_limiters
+
+__version__ = "0.2.0"
 
 load_dotenv()
 
